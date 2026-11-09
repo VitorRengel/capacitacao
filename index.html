@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Capacitação: Como Usar o GitHub</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
+      --green: #238636;
+      --green-light: #2ea043;
+      --purple: #8957e5;
+      --blue: #58a6ff;
+      --orange: #f0883e;
+      --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    /* Top Navigation / Status */
+    header {
+      padding: 18px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background-color: rgba(22, 27, 34, 0.8);
+      backdrop-filter: blur(8px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .brand svg {
+      fill: var(--text-main);
+    }
+
+    .slide-badge {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      background-color: #21262d;
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+
+    /* Slide Deck Container */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 40px;
+      position: relative;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      max-width: 1000px;
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    .slide.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Typography */
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 16px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    h2 {
+      font-size: 2.2rem;
+      margin-bottom: 24px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    p.subtitle {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      margin-bottom: 30px;
+      line-height: 1.5;
+    }
+
+    /* Layout Elements */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      transition: border-color 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--blue);
+    }
+
+    .card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card p {
+      color: var(--text-muted);
+      line-height: 1.5;
+      font-size: 0.95rem;
+    }
+
+    /* Code Terminal Box */
+    .terminal {
+      background: #010409;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      color: var(--text-main);
+      margin-top: 15px;
+      line-height: 1.7;
+    }
+
+    .terminal span.cmd { color: var(--blue); }
+    .terminal span.comment { color: var(--text-muted); }
+    .terminal span.highlight { color: var(--green-light); }
+
+    /* Steps list */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 16px 20px;
+      border-radius: 8px;
+    }
+
+    .step-num {
+      background-color: var(--green);
+      color: white;
+      font-family: var(--font-mono);
+      font-weight: bold;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Workflow Pills */
+    .workflow-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .wf-node {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px 24px;
+      text-align: center;
+      flex: 1;
+    }
+
+    .wf-node code {
+      font-family: var(--font-mono);
+      color: var(--blue);
+      display: block;
+      margin-top: 6px;
+      font-size: 1rem;
+    }
+
+    .arrow {
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+
+    /* Footer & Controls */
+    footer {
+      padding: 16px 40px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--card-bg);
+    }
+
+    .hint {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+    }
+
+    button {
+      background-color: #21262d;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background-color: #30363d;
+    }
+
+    button.btn-primary {
+      background-color: var(--green);
+      border-color: rgba(240, 246, 252, 0.1);
+      color: white;
+    }
+
+    button.btn-primary:hover {
+      background-color: var(--green-light);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <header>
+    <div class="brand">
+      <svg height="32" viewBox="0 0 16 16" width="32">
+        <path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"></path>
+      </svg>
+      <span>Capacitação GitHub</span>
+    </div>
+    <div class="slide-badge" id="slideNum">Slide 1 / 8</div>
+  </header>
+
+  <!-- Slide Content -->
+  <main>
+
+    <!-- Slide 1: Capa -->
+    <div class="slide active">
+      <div style="font-family: var(--font-mono); color: var(--green-light); margin-bottom: 12px;">$ git init capacitação-github</div>
+      <h1>Dominando o GitHub do Zero</h1>
+      <p class="subtitle">Aprenda a salvar, versionar e colaborar em projetos sem complicação.</p>
+      
+      <div class="card" style="display: inline-flex; align-items: center; gap: 16px;">
+        <span style="font-size: 1.8rem;">💡</span>
+        <div style="text-align: left;">
+          <strong style="display:block; color: var(--text-main);">Sem medo da linha de comando!</strong>
+          <span style="color: var(--text-muted); font-size: 0.9rem;">Entenda a lógica visual por trás dos repositórios e commits.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2: Git vs GitHub -->
+    <div class="slide">
+      <h2>⚖️ Git vs. GitHub</h2>
+      <p class="subtitle">Entenda de uma vez a diferença entre os dois.</p>
+      
+      <div class="grid-2">
+        <div class="card" style="border-top: 4px solid var(--orange);">
+          <h3><span style="color: var(--orange);">●</span> Git (O Motor)</h3>
+          <p>É o programa instalado no seu computador. Funciona como uma <strong>"máquina do tempo"</strong> que grava e gerencia todo o histórico de alterações dos arquivos.</p>
+          <div class="terminal" style="margin-top: 15px; font-size: 0.85rem;">
+            Funciona offline no seu PC
+          </div>
+        </div>
+
+        <div class="card" style="border-top: 4px solid var(--blue);">
+          <h3><span style="color: var(--blue);">●</span> GitHub (A Nuvem)</h3>
+          <p>É o site/plataforma onde você <strong>hospeda</strong> seus repositórios Git na nuvem, compartilha seu trabalho e colabora com outras pessoas.</p>
+          <div class="terminal" style="margin-top: 15px; font-size: 0.85rem;">
+            Hospedagem + Rede Social Dev
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: Os 4 Pilares -->
+    <div class="slide">
+      <h2>🧱 Os 4 Conceitos Fundamentais</h2>
+      <p class="subtitle">O vocabulário básico que você vai usar todos os dias.</p>
+      
+      <div class="grid-4">
+        <div class="card">
+          <h3>📁 Repositório</h3>
+          <p>A "pasta" do seu projeto na nuvem onde ficam os códigos, imagens e histórico.</p>
+        </div>
+        <div class="card">
+          <h3>💾 Commit</h3>
+          <p>Um "ponto de restauração" salvo com uma mensagem explicando o que você fez.</p>
+        </div>
+        <div class="card">
+          <h3>🌿 Branch</h3>
+          <p>Uma ramificação para testar ideias e novas telas sem estragar o código principal.</p>
+        </div>
+        <div class="card">
+          <h3>🔀 Pull Request</h3>
+          <p>O pedido para juntar sua branch de volta ao projeto após revisão da equipe.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4: O Ciclo de Trabalho -->
+    <div class="slide">
+      <h2>🔄 O Ciclo de Trabalho (Workflow)</h2>
+      <p class="subtitle">O caminho que qualquer alteração faz até chegar ao GitHub:</p>
+
+      <div class="workflow-container">
+        <div class="wf-node">
+          <strong>1. Modificar</strong>
+          <code style="color: var(--orange);">Edite no VS Code</code>
+        </div>
+        <span class="arrow">➔</span>
+        <div class="wf-node">
+          <strong>2. Selecionar</strong>
+          <code>git add .</code>
+        </div>
+        <span class="arrow">➔</span>
+        <div class="wf-node">
+          <strong>3. Salvar Foto</strong>
+          <code>git commit -m "..."</code>
+        </div>
+        <span class="arrow">➔</span>
+        <div class="wf-node" style="border-color: var(--green);">
+          <strong>4. Enviar</strong>
+          <code style="color: var(--green-light);">git push</code>
+        </div>
+      </div>
+
+      <div class="terminal" style="margin-top: 30px;">
+        <span class="comment"># Exemplo real:</span><br>
+        <span class="cmd">git add</span> index.html<br>
+        <span class="cmd">git commit</span> -m <span class="highlight">"Adiciona botão de login"</span><br>
+        <span class="cmd">git push</span> origin main
+      </div>
+    </div>
+
+    <!-- Slide 5: Criando um Repositório -->
+    <div class="slide">
+      <h2>✨ Criando seu 1º Repositório</h2>
+      <p class="subtitle">Passo a passo no site do GitHub (Interface Web):</p>
+
+      <div class="steps">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div>
+            <strong>Clique no botão verde "New"</strong>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Fica no menu superior direito do site.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div>
+            <strong>Escolha um Nome Claro</strong>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Ex: <code>meu-site-pessoal</code> ou <code>sistema-vendas</code> (evite espaços e acentos).</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div>
+            <strong>Marque: "Add a README file"</strong>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">O README é o cartão de visitas que explica o que é o projeto.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6: Branches e Pull Requests -->
+    <div class="slide">
+      <h2>🌿 Trabalho em Equipe Sem Conflito</h2>
+      <p class="subtitle">Como várias pessoas mexem no mesmo código sem apagar o trabalho das outras:</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="color: var(--purple);">🔀 Branch Paralela</h3>
+          <p>Nunca mexa direto na versão principal (<code>main</code>).</p>
+          <p style="margin-top: 10px;">Crie uma ramificação tipo <code>nova-tela-cadastro</code>. Se errar, o site original continua no ar intacto!</p>
+        </div>
+        <div class="card">
+          <h3 style="color: var(--green-light);">🔍 Code Review (PR)</h3>
+          <p>Terminou a sua tarefa? Abra um <strong>Pull Request</strong>.</p>
+          <p style="margin-top: 10px;">Seus colegas de time olham as mudanças, deixam comentários de melhoria e aprovam a junção (Merge).</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: Boas Práticas -->
+    <div class="slide">
+      <h2>🛡️ 3 Regras de Ouro</h2>
+      <p class="subtitle">O que você nunca deve esquecer:</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="color: #f85149;">1. NUNCA suba senhas</h3>
+          <p>Senhas, chaves de API e arquivos de ambiente (<code>.env</code>) nunca devem ir pro GitHub. Use o arquivo <code>.gitignore</code> para bloqueá-los.</p>
+        </div>
+
+        <div class="card">
+          <h3 style="color: var(--blue);">2. Mensagens com sentido</h3>
+          <p>Evite commits como <code>"ajustes"</code> ou <code>"corrigindo erro"</code>.<br>Prefira: <code>"corrige alinhamento do banner mobile"</code>.</p>
+        </div>
+
+        <div class="card" style="grid-column: span 2;">
+          <h3 style="color: var(--green-light);">3. O README é a sua vitrine</h3>
+          <p>Se ninguém entender o que seu projeto faz em 10 segundos, ninguém vai usar. Coloque uma foto, o objetivo e como rodar o projeto.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 8: Desafio Prático -->
+    <div class="slide">
+      <h2>🎯 Desafio Prático (Mão na Massa!)</h2>
+      <p class="subtitle">Exercício de 5 minutos para fixar agora:</p>
+
+      <div class="card" style="background: #010409; border-color: var(--green);">
+        <ol style="padding-left: 20px; line-height: 2; color: var(--text-main);">
+          <li>Acesse <strong>github.com</strong> e faça login.</li>
+          <li>Crie um repositório chamado <code>primeiro-passo</code> (com README marcado).</li>
+          <li>Clique no ícone de lápis ✏️ no próprio navegador para editar o README.</li>
+          <li>Escreva seu nome, cargo e objetivo profissional.</li>
+          <li>Clique no botão verde <strong>"Commit changes"</strong>! 🚀</li>
+        </ol>
+      </div>
+
+      <div style="text-align: center; margin-top: 30px; color: var(--text-muted); font-size: 1.1rem;">
+        🎉 <strong>Parabéns! Você acabou de fazer o seu primeiro commit!</strong>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Controls Footer -->
+  <footer>
+    <div class="hint">Use as teclas [ ← ] e [ → ] ou clique nos botões</div>
+    <div class="controls">
+      <button id="prevBtn" onclick="changeSlide(-1)">Anterior</button>
+      <button id="nextBtn" class="btn-primary" onclick="changeSlide(1)">Próximo ➔</button>
+    </div>
+  </footer>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const slideNum = document.getElementById('slideNum');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let current = 0;
+
+    function update() {
+      slides.forEach((s, idx) => {
+        s.classList.toggle('active', idx === current);
+      });
+      slideNum.textContent = `Slide ${current + 1} / ${slides.length}`;
+      prevBtn.disabled = current === 0;
+      
+      if (current === slides.length - 1) {
+        nextBtn.textContent = 'Reiniciar ↺';
+      } else {
+        nextBtn.textContent = 'Próximo ➔';
+      }
+    }
+
+    function changeSlide(direction) {
+      current += direction;
+      if (current >= slides.length) current = 0;
+      if (current < 0) current = 0;
+      update();
+    }
+
+    // Atalhos de teclado
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        changeSlide(1);
+      } else if (e.key === 'ArrowLeft') {
+        changeSlide(-1);
+      }
+    });
+
+    update();
+  </script>
+</body>
+</html>
